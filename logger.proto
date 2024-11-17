@@ -1,0 +1,39 @@
+﻿syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+import public "enums.proto";
+
+option csharp_namespace = "Logger";
+
+package Logger;
+
+
+enum MessageType {
+    INFO = 0;
+    SERVICE = 1;
+    WARNING = 2;
+    ERROR = 3;
+    DEBUG = 4;
+}
+
+service Logger {
+    rpc GetLogFormat(LogFormatRequest) returns (LogFormatResponse); 
+    rpc Log(LogMessage) returns (LogResult);
+    //rpc ViewLog() may be useful for remote viewing 
+}
+
+message LogFormatRequest {}
+message LogFormatResponse {
+    string LogFormat = 1;
+}
+
+message LogMessage {
+    MessageType type = 1;
+    google.protobuf.Timestamp timestamp = 2;
+    Enums.ServiceUnit source = 3;
+    string content = 4;
+}
+message LogResult {
+    bool isRecorded = 1; 
+}
