@@ -10,7 +10,7 @@ In addition to the *.proto files, there are two scripts for adding/updating syst
 
 ### SET_ENV_PROTO_PATH.ps1 (for Win)
 
-! Administrator rights required !
+#### ! Administrator rights required !
 
 If you got SecurityError, try this:
 ```bash
