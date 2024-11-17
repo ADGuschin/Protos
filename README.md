@@ -31,9 +31,9 @@ sudo ./SET_ENV_PROTO_PATH.sh
 In your *.csproj file add this:
 ```xml
 <ItemGroup>
-	<Protobuf Include="$(DRESSY_LOCAL_PROTO_PATH)\*.proto" GrpcServices="Both">
-		<Link>"Protos\%(RecursiveDir)%(FileName)%(Exstension)</Link>
-    </Protobuf>
+  <Protobuf Include="$(DRESSY_LOCAL_PROTO_PATH)\*.proto" GrpcServices="Both">
+    <Link>"Protos\%(RecursiveDir)%(FileName)%(Exstension)</Link>
+  </Protobuf>
 </ItemGroup>
 ```
 
