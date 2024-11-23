@@ -1,8 +1,8 @@
 ﻿syntax = "proto3";
 
-package Enums;
 
-option csharp_namespace = "Enums";
+
+package Enums;
 
 enum ServiceUnit {
     SCRAPPING_SERVICE = 0;
