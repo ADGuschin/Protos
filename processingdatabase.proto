@@ -72,6 +72,7 @@ message Record {
 	string Vector = 8;
 	string Norm = 9;
 	string Metadata = 10; 
+	string Source = 11;
 }
 
 // Status message with results of procedure execution
