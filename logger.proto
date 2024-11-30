@@ -1,13 +1,10 @@
 ﻿syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-
 import public "enums.proto";
 
-option csharp_namespace = "Logger";
 
 package Logger;
-
 
 enum MessageType {
     INFO = 0;

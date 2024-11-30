@@ -1,9 +1,7 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "FileExchange";
 
 package FileExchange;
-
 
 service FileExchange {
 	rpc Upload(stream FileData) returns (UploadStatus);

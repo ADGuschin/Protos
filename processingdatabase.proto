@@ -1,13 +1,9 @@
 syntax = "proto3";
 
-//import public "base.proto";
-
 import public "fileexchange.proto";
 
-option csharp_namespace = "ProcessingDatabase";
 
 package ProcessingDatabase; 
-
 
 // The processing database service, shared for scrapper, preprocessor and processor units
 service ProcessingDatabase {
@@ -28,6 +24,10 @@ service ProcessingDatabase {
 message InsertRequest {
 	RecordStatus status = 1;
 	Record record = 2;
+}
+message CSVFileData {
+	string source = 1;
+	FileExchange.FileData FileData = 2;
 }
 message InsertResult {
 	CommandResult result = 1;
@@ -62,7 +62,17 @@ enum RecordStatus {
 // Main data object. Record contains all necessary data for any procedures, may be optimized by server with including only mandatory data objects for each client
 // may be replaced with table-record structured message to optimize resources
 message Record {
-	string data = 1;
+	int32 Id = 1;
+	RecordStatus Status = 2;
+	string Article = 3;
+	string Category = 4;
+	string Subcategory = 5;
+	string ImageUrl = 6;
+	string Tags = 7;
+	string Vector = 8;
+	string Norm = 9;
+	string Metadata = 10; 
+	string Source = 11;
 }
 
 // Status message with results of procedure execution
