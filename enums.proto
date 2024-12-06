@@ -1,9 +1,8 @@
 ﻿syntax = "proto3";
 
-
-
 package Enums;
 
+// Set of service types, used for logger
 enum ServiceUnit {
     SCRAPPING_SERVICE = 0;
     DATA_PREPROCESSING_SERVICE = 1;

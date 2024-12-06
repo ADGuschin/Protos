@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package Dressy.Common;
+
+// Embedding data type
+message Embedding {
+	repeated double data = 1;
+}
+
+// ID type for all identifying fields
+message Id {
+	uint64 id = 1;
+}
+
+// Status message with results of procedure execution
+message CommandStatus {
+	int32 status_code = 1;
+	string error_message = 2;
+}

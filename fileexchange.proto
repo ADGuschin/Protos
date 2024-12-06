@@ -8,8 +8,8 @@ service FileExchange {
 }
 
 message FileData {
-	string FileName = 1;
-	bytes ChunkData = 2;
+	string file_name = 1;
+	bytes chunk_data = 2;
 }
 
 enum UploadStatusCode {

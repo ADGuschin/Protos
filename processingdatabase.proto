@@ -1,84 +1,174 @@
 syntax = "proto3";
 
 import public "fileexchange.proto";
+import "common.proto";
 
+package Dressy.ProcessingDatabase;
 
-package ProcessingDatabase; 
+/*		'Records' table			*/
+service ProcessingDatabaseRecords {
 
-// The processing database service, shared for scrapper, preprocessor and processor units
-service ProcessingDatabase {
-  // Inserts data into a table, allowed only for scrapper
-  rpc Insert (InsertRequest) returns (InsertResult);
-  rpc ImportCSV(stream FileExchange.FileData) returns (FileExchange.UploadStatus);
+  // Inserts data into a table, one at a time, in a batch, or from a csv file
+  rpc InsertRecords(InsertRecordsRequest) returns (InsertRecordsResponse);
+  rpc ImportCsv(stream FileExchange.FileData) returns (FileExchange.UploadStatus);
 
   // Getting data by status, allowed only for preprocessor and processor
   // For preprocessor allowed status is only NEW, for processor allowed NEW and PREPROCESSED (depends on processor posibilities) status
-  rpc GetByStatus(GetByStatusRequest) returns (GetByStatusResult);
+  rpc GetRecordsByStatus(GetRecordsByStatusRequest) returns (GetRecordsByStatusResponse);
+
+  rpc GetEmbeddingsByStatus(GetEmbeddingsByStatusRequest) returns (GetEmbeddingsByStatusResponse);
+
+  // Getting data by Id, use for getting data after search
+  rpc GetRecordById(GetRecordByIdRequest) returns (GetRecordByIdResponse);
 
   // Updating data after preprocessing or processing, status will be updated automatically
-  rpc UpdateByID(UpdateByIDRequest) returns (UpdateByIDResult);
-  //all checkings will be performed by the server
+  rpc UpdateRecordById(UpdateRecordByIdRequest) returns (UpdateRecordByIdResponse);
+  //rpc UpdateRecordBatchById(UpdateRecordBatchByIdRequest) returns (UpdateRecordBatchByIdResponse); not used now
+
+  // Deleting old Records, firstly we should delete this records from all another databases!
+  //rpc DeleteRecordBatchById(DeleteRecordBatchByIdRequest) returns (DeleteRecordBatchByIdResponse); may be useful later
 }
+
+/*			'Records' table requests & responses			*/
 
 // Insert data
-message InsertRequest {
-	RecordStatus status = 1;
-	Record record = 2;
+message InsertRecordsRequest {
+	repeated Record records = 1;
 }
-message CSVFileData {
+message InsertRecordsResponse {
+	repeated Common.CommandStatus status = 1;
+}
+message CsvFileData { //not used now, shoud be used in ImportCsv()
 	string source = 1;
-	FileExchange.FileData FileData = 2;
-}
-message InsertResult {
-	CommandResult result = 1;
+	string fields_format_regex = 2;
+	FileExchange.FileData file_data = 3;
 }
 
-// GetByStatus data
-message GetByStatusRequest {
-	RecordStatus status = 1;
+// Get data
+message GetRecordsByStatusRequest {
+	RecordStatus record_status = 1;
 }
-message GetByStatusResult {
+message GetRecordsByStatusResponse {
+	repeated Record records = 1;
+	Common.CommandStatus status = 2;
+}
+message GetEmbeddingsByStatusRequest {
+	RecordStatus record_status = 1;
+}
+message GetEmbeddingsByStatusResponse {
+	map<uint64, Common.Embedding> embeddings = 1;
+	Common.CommandStatus status = 2;
+}
+message GetRecordByIdRequest {
+	Common.Id record_id = 1;
+}
+message GetRecordByIdResponse {
 	Record record = 1;
-	CommandResult result = 2;
+	Common.CommandStatus status = 2;
 }
 
-// UpdateByID data
-message UpdateByIDRequest {
+// Update data
+message UpdateRecordByIdRequest {
 	Record record = 1;
 }
-message UpdateByIDResult {
-	CommandResult result = 1;
+message UpdateRecordByIdResponse {
+	Common.CommandStatus status = 1;
 }
 
-// Describes set of possible values for Record status
-enum RecordStatus {
-	NEW = 0;
-	PREPROCESSED = 1;
-	PROCEESSED = 2;
-	FINISHED = 3;
-	ERROR = 4;
-}
 
 // Main data object. Record contains all necessary data for any procedures, may be optimized by server with including only mandatory data objects for each client
 // may be replaced with table-record structured message to optimize resources
 message Record {
-	int32 Id = 1;
-	RecordStatus Status = 2;
-	string Article = 3;
-	string Category = 4;
-	string Subcategory = 5;
-	string ImageUrl = 6;
-	string Tags = 7;
-	string Vector = 8;
-	string Norm = 9;
-	string Metadata = 10; 
-	string Source = 11;
+	Common.Id record_id = 1;
+	RecordStatus status = 2;
+	string article = 3;
+	string category = 4;
+	string subcategory = 5;
+	string image_url = 6;
+	string tags = 7;
+	Common.Embedding image_embedding = 8;
+	string norm = 9;
+	string metadata = 10; 
+	string source = 11;
+	reserved "NormalizedImage", "Added", "Updated", "LastErrorMessage";
 }
 
-// Status message with results of procedure execution
-message CommandResult {
-	int32 errorCode = 1;
-	string errorMessage = 2;
+// Describes set of possible values for Record status
+enum RecordStatus {
+	NEW = 0;		// new raw data, without any embeddings or other unprepared fields
+	PROCESSING = 1; // data is in processing now, waiting for update embeddings or other prepared fields
+	PROCEESSED = 2; // data is ready for using, can be sent to searching database
+	FINISHED = 3;	// data was succesfully sent to searching database, and is using now
+	ERROR = 4;		// something went wrong oin one of the stage of the data life cycle, check the 'LastErrorMessage' field in the 'Records' table, and fix the issue manually 
+	//DELETING = 5; // deleting initiated, in progress, wait for removing from other datasets
+	//DELETED = 6;	// deleting finished, data was removed from other datasets and now may be deleted here
 }
 
 
+
+
+/*		'Users' table		*/
+
+service ProcessingDatabaseUsers {
+
+  // Returns user embedding by an ID, if requested ID is absent then this is a new user, so his ID will be added and the embedding will be generated
+  rpc GetUserEmbeddingById(GetUserEmbeddingByIdRequest) returns (GetUserEmbeddingByIdResponse);
+
+  // Checking whether the user has seen the recording or not, 
+  rpc IsRecordViewedByUser(IsRecordViewedByUserRequest) returns (IsRecordViewedByUserResponse);
+
+  // Adds user viewed record to the table, should be executed on the stage of user reaction processing
+  rpc AddViewedRecordToUser(AddViewedRecordToUserRequest) returns (AddViewedRecordToUserResponse);
+
+  // Deleting user data, should be executed when we got a message from backend about user's decision to delete his account
+  rpc DeleteUserById(DeleteUserByIdRequest) returns (DeleteUserByIdResponse);
+}
+
+/*			'Users' table requests & responses			*/
+
+// Getting embedding for searching similar records
+message GetUserEmbeddingByIdRequest {
+	Common.Id user_id = 1;
+}
+message GetUserEmbeddingByIdResponse {
+	Common.Embedding user_embedding = 1;
+	Common.CommandStatus status = 2;
+}
+
+// Checking for viewed records to avoid repeatings in user experience
+message IsRecordViewedByUserRequest {
+	Common.Id user_id = 1;
+	Common.Id record_id = 2;
+}
+message IsRecordViewedByUserResponse {
+	bool is_record_viewed = 1;
+	Common.CommandStatus status = 2;
+}
+
+// Updating user viewed records list
+message AddViewedRecordToUserRequest {
+	Common.Id user_id = 1;
+	Common.Id record_id = 2;
+}
+message AddViewedRecordToUserResponse {
+	Common.CommandStatus status = 1;
+}
+
+// Deleting ex-user's data
+message DeleteUserByIdRequest {
+	Common.Id user_id = 1;
+}
+message DeleteUserByIdResponse {
+	Common.CommandStatus status = 1;
+}
+
+// User data structure
+message User {
+	Common.Id user_id = 1;
+	Common.Embedding user_embedding = 2;
+	ViewedRecords viewed_records = 3;
+}
+
+message ViewedRecords {
+	repeated Common.Id id_list = 1;
+}
