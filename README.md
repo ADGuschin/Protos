@@ -30,11 +30,14 @@ sudo ./SET_ENV_PROTO_PATH.sh
 ### Visual Studio 2022
 In your *.csproj file add this:
 ```xml
-<ItemGroup>
-  <Protobuf Include="$(DRESSY_LOCAL_PROTO_PATH)\**\*.proto" GrpcServices="Both">
-    <Link>"Protos\%(RecursiveDir)%(FileName)%(Extension)</Link>
-  </Protobuf>
-</ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="$(DRESSY_LOCAL_PROTO_PATH)/**/*.proto" GrpcServices="Both">
+			<Link>Protos/%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Protobuf>
+		<Protobuf Include="$(DRESSY_LOCAL_PROTO_PATH)/**/common.proto" GrpcServices="None">
+			<Link>Protos/%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Protobuf>
+	</ItemGroup>
 ```
 
 ### Other IDEs
