@@ -4,12 +4,19 @@ package Dressy.Common;
 
 // Embedding data type
 message Embedding {
-	repeated double data = 1;
+	repeated double embedding = 1;
+}
+message EmbeddingList {
+	repeated Embedding embedding_list = 1;
 }
 
 // ID type for all identifying fields
+// !!!WARNING!!! type of "Id.id" should match with type of "IdList.id"
 message Id {
-	uint64 id = 1;
+	bytes id = 1;
+}
+message IdList {
+	repeated Id id_list = 1;
 }
 
 // Status message with results of procedure execution

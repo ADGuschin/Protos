@@ -26,7 +26,11 @@ service ProcessingDatabaseRecords {
   //rpc UpdateRecordBatchById(UpdateRecordBatchByIdRequest) returns (UpdateRecordBatchByIdResponse); not used now
 
   // Deleting old Records, firstly we should delete this records from all another databases!
-  //rpc DeleteRecordBatchById(DeleteRecordBatchByIdRequest) returns (DeleteRecordBatchByIdResponse); may be useful later
+  //rpc DeleteRecordsById(DeleteRecordsByIdRequest) returns (DeleteRecordsByIdResponse); may be useful later
+
+  //   !!!!!FOR TEST ENVIRONMENT ONLY!!!!!! Clearing table 
+  rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse);
+  rpc ClearTable(ClearTableRequest) returns (ClearTableResponse);
 }
 
 /*			'Records' table requests & responses			*/
@@ -56,7 +60,7 @@ message GetEmbeddingsByStatusRequest {
 	RecordStatus record_status = 1;
 }
 message GetEmbeddingsByStatusResponse {
-	map<uint64, Common.Embedding> embeddings = 1;
+	repeated EmbeddingWithId embeddings = 1;
 	Common.CommandStatus status = 2;
 }
 message GetRecordByIdRequest {
@@ -75,6 +79,18 @@ message UpdateRecordByIdResponse {
 	Common.CommandStatus status = 1;
 }
 
+// Delete data
+message AuthenticationRequest {}
+message AuthenticationResponse {
+	bytes rsa_public_key = 1;
+}
+message ClearTableRequest {
+	string auth_data = 1;
+}
+message ClearTableResponse {
+	Common.CommandStatus status = 1;
+}
+
 
 // Main data object. Record contains all necessary data for any procedures, may be optimized by server with including only mandatory data objects for each client
 // may be replaced with table-record structured message to optimize resources
@@ -90,7 +106,17 @@ message Record {
 	string norm = 9;
 	string metadata = 10; 
 	string source = 11;
+	Common.Id main_record_id = 12; // reference to main record of current thing
+	string same_goods = 13; //json with id list of other records of current thing
+	Gender gender = 14;
+	string price = 15;
+	string brand = 16;
+
 	reserved "NormalizedImage", "Added", "Updated", "LastErrorMessage";
+}
+message EmbeddingWithId {
+	Common.Id id = 1;
+	Common.Embedding embedding = 2;
 }
 
 // Describes set of possible values for Record status
@@ -103,6 +129,12 @@ enum RecordStatus {
 	//DELETING = 5; // deleting initiated, in progress, wait for removing from other datasets
 	//DELETED = 6;	// deleting finished, data was removed from other datasets and now may be deleted here
 }
+enum Gender {
+	UNDEFINED = 0;
+	MALE = 1;
+	FRMALE = 2;
+	UNISEX = 3;
+}
 
 
 
@@ -111,10 +143,11 @@ enum RecordStatus {
 
 service ProcessingDatabaseUsers {
 
-  // Returns user embedding by an ID, if requested ID is absent then this is a new user, so his ID will be added and the embedding will be generated
-  rpc GetUserEmbeddingById(GetUserEmbeddingByIdRequest) returns (GetUserEmbeddingByIdResponse);
+  // Returns user embedding by Key, if requested key is absent then this is a new user, so his Key will be added and the embedding will be generated
+  rpc GetUserEmbeddingByKey(GetUserEmbeddingByKeyRequest) returns (GetUserEmbeddingByKeyResponse);
 
-  // Checking whether the user has seen the recording or not, 
+  // Checking whether the user has seen the record or not
+  // ! Returns "true" ONLY if requested user_id and record_id_list is present, and requested record_id is present in record_id_list !
   rpc IsRecordViewedByUser(IsRecordViewedByUserRequest) returns (IsRecordViewedByUserResponse);
 
   // Adds user viewed record to the table, should be executed on the stage of user reaction processing
@@ -127,11 +160,11 @@ service ProcessingDatabaseUsers {
 /*			'Users' table requests & responses			*/
 
 // Getting embedding for searching similar records
-message GetUserEmbeddingByIdRequest {
-	Common.Id user_id = 1;
+message GetUserEmbeddingByKeyRequest {
+	UserEmbeddingKey key = 1;
 }
-message GetUserEmbeddingByIdResponse {
-	Common.Embedding user_embedding = 1;
+message GetUserEmbeddingByKeyResponse {
+	Common.Embedding embedding = 1;
 	Common.CommandStatus status = 2;
 }
 
@@ -162,13 +195,18 @@ message DeleteUserByIdResponse {
 	Common.CommandStatus status = 1;
 }
 
-// User data structure
-message User {
+// User embedding data structure
+message UserEmbedding {
+	UserEmbeddingKey key = 1;
+	Common.Embedding embedding = 2;
+}
+message UserEmbeddingKey {
 	Common.Id user_id = 1;
-	Common.Embedding user_embedding = 2;
-	ViewedRecords viewed_records = 3;
+	string category = 2;
 }
 
+// Viewed records data structure
 message ViewedRecords {
-	repeated Common.Id id_list = 1;
+	Common.Id user_id = 1;
+	Common.IdList record_id_list = 2;
 }
