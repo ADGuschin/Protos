@@ -6,6 +6,15 @@ import public "enums.proto";
 
 package Logger;
 
+enum Source {
+    SCRAPPING_SERVICE = 0;
+    DATA_PROCESSING_SERVICE = 1;
+    PROCESSING_DATABASE_SERVICE = 2;
+    SEARCH_SERVICE = 3;
+    RECOMMENDATION_SERVICE = 4;
+    LOGGER_SERVICE = 5;
+}
+
 enum MessageType {
     INFO = 0;
     SERVICE = 1;

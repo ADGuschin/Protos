@@ -3,13 +3,3 @@
 package Enums;
 
 // Set of service types, used for logger
-enum ServiceUnit {
-    SCRAPPING_SERVICE = 0;
-    DATA_PREPROCESSING_SERVICE = 1;
-    PREPROCESSED_DATA_QUEUE_SERVICE = 2;
-    DATA_PROCESSING_SERVICE = 3;
-    PROCESSING_DATABASE_SERVICE = 4;
-    SEARCH_SERVICE = 5;
-    RECOMMENDATION_SERVICE = 6;
-    LOGGER_SERVICE = 7;
-}
