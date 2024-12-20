@@ -4,14 +4,13 @@ package Dressy.Common;
 
 // Embedding data type
 message Embedding {
-	repeated double embedding = 1;
+	repeated float embedding = 1;
 }
 message EmbeddingList {
 	repeated Embedding embedding_list = 1;
 }
 
 // ID type for all identifying fields
-// !!!WARNING!!! type of "Id.id" should match with type of "IdList.id"
 message Id {
 	bytes id = 1;
 }

@@ -1,5 +1,0 @@
-﻿syntax = "proto3";
-
-package Enums;
-
-// Set of service types, used for logger

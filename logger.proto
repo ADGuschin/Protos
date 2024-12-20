@@ -1,8 +1,6 @@
 ﻿syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import public "enums.proto";
-
 
 package Logger;
 
@@ -37,7 +35,7 @@ message LogFormatResponse {
 message LogMessage {
     MessageType type = 1;
     google.protobuf.Timestamp timestamp = 2;
-    Enums.ServiceUnit source = 3;
+    Source source = 3;
     string content = 4;
 }
 message LogResult {
