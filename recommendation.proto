@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package Recommendation;
+
+service Recommendation {
+    rpc GetRecommendationsCards (RecommendationRequest) returns (RecommendationResponse);
+    rpc UpdateClientEmbendingStringVector (ClientEmbendingStringRequest) returns (ClientEmbendingResponse);
+    rpc UpdateClientEmbendingFloatVector (ClientEmbendingFloatRequest) returns (ClientEmbendingResponse);
+}
+
+
+message RecommendationRequest {
+    int64 client_id = 1;
+    int32 count = 2; 
+}
+
+message RecommendationResponse {
+   repeated int64 requestVector_id = 1; 
+}
+
+message ClientEmbendingStringRequest {
+    repeated string requestVector = 1;
+}
+
+message ClientEmbendingResponse{
+    bool is_update = 1;
+}
+message ClientEmbendingFloatRequest {
+    repeated float requestVector = 1;
+}
