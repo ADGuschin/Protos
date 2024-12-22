@@ -4,8 +4,8 @@ package Recommendation;
 
 service Recommendation {
     rpc GetRecommendationsCards (RecommendationRequest) returns (RecommendationResponse);
-    rpc UpdateClientEmbendingStringVector (ClientEmbendingStringRequest) returns (ClientEmbendingResponse);
-    rpc UpdateClientEmbendingFloatVector (ClientEmbendingFloatRequest) returns (ClientEmbendingResponse);
+    rpc UpdateClientEmbeddingStringVector (ClientEEmbeddingStringRequest) returns (ClientEmbendingResponse);
+    rpc UpdateClientEmbeddingFloatVector (ClientEmbeddingFloatRequest) returns (ClientEmbendingResponse);
 }
 
 
@@ -18,13 +18,13 @@ message RecommendationResponse {
    repeated int64 requestVector_id = 1; 
 }
 
-message ClientEmbendingStringRequest {
+message ClientEmbeddingStringRequest {
     repeated string requestVector = 1;
 }
 
-message ClientEmbendingResponse{
+message ClientEmbeddingResponse{
     bool is_update = 1;
 }
-message ClientEmbendingFloatRequest {
+message ClientEmbeddingFloatRequest {
     repeated float requestVector = 1;
 }
