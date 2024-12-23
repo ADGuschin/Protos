@@ -4,8 +4,8 @@ package Recommendation;
 
 service Recommendation {
     rpc GetRecommendationsCards (RecommendationRequest) returns (RecommendationResponse);
-    rpc UpdateClientEmbeddingStringVector (ClientEEmbeddingStringRequest) returns (ClientEmbendingResponse);
-    rpc UpdateClientEmbeddingFloatVector (ClientEmbeddingFloatRequest) returns (ClientEmbendingResponse);
+    rpc UpdateClientEmbeddingStringVector (ClientEmbeddingStringRequest) returns (ClientEmbeddingResponse);
+    rpc UpdateClientEmbeddingFloatVector (ClientEmbeddingFloatRequest) returns (ClientEmbeddingResponse);
 }
 
 
