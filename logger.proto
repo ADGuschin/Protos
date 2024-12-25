@@ -4,6 +4,7 @@ import "google/protobuf/timestamp.proto";
 
 package Logger;
 
+//Enum which cosist of services
 enum Source {
     SCRAPPING_SERVICE = 0;
     DATA_PROCESSING_SERVICE = 1;
@@ -12,6 +13,7 @@ enum Source {
     RECOMMENDATION_SERVICE = 4;
     LOGGER_SERVICE = 5;
 }
+
 
 enum MessageType {
     INFO = 0;
@@ -22,12 +24,17 @@ enum MessageType {
 }
 
 service Logger {
+    //Get log format for logging
     rpc GetLogFormat(LogFormatRequest) returns (LogFormatResponse); 
-    rpc Log(LogMessage) returns (LogResult);
+
+    ////Log in DataBase from your service 
+    rpc Log(LogMessage) returns (LogResult); 
+
     //rpc ViewLog() may be useful for remote viewing 
 }
 
 message LogFormatRequest {}
+
 message LogFormatResponse {
     string log_format = 1;
 }
@@ -38,6 +45,7 @@ message LogMessage {
     Source source = 3;
     string content = 4;
 }
+
 message LogResult {
     bool is_recorded = 1; 
 }

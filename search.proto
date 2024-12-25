@@ -9,7 +9,11 @@ message RecommendationRequest {
 }
 
 message RecommendationResponse {
-   repeated int64 requestVector_id = 1; 
+   repeated UUID requestVector_id = 1; 
+}
+
+message UUID {
+  required string value = 1;
 }
 
 service Search {

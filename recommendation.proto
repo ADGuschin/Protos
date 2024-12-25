@@ -1,21 +1,27 @@
 syntax = "proto3";
 
-package Recommendation;
+package Dressy.Recommendation;
 
 service Recommendation {
+
     rpc GetRecommendationsCards (RecommendationRequest) returns (RecommendationResponse);
-    rpc UpdateClientEmbeddingStringVector (ClientEEmbeddingStringRequest) returns (ClientEmbendingResponse);
-    rpc UpdateClientEmbeddingFloatVector (ClientEmbeddingFloatRequest) returns (ClientEmbendingResponse);
+
+    rpc UpdateClientEmbeddingStringVector (ClientEmbeddingStringRequest) returns (ClientEmbeddingResponse);
+
+    rpc UpdateClientEmbeddingFloatVector (ClientEmbeddingFloatRequest) returns (ClientEmbeddingResponse);
 }
 
+message UUID {
+  required string value = 1;
+}
 
 message RecommendationRequest {
-    int64 client_id = 1;
+    UUID client_id = 1;
     int32 count = 2; 
 }
 
 message RecommendationResponse {
-   repeated int64 requestVector_id = 1; 
+   repeated UUID requestVector_id = 1; 
 }
 
 message ClientEmbeddingStringRequest {
