@@ -1,7 +1,8 @@
 ﻿syntax = "proto3";
 
 
-package FileExchange;
+package Dressy.FileExchange;
+option go_package = "Dressy/FileExchange";
 
 service FileExchange {
 	rpc Upload(stream FileData) returns (UploadStatus);

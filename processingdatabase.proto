@@ -4,6 +4,7 @@ import public "fileexchange.proto";
 import "common.proto";
 
 package Dressy.ProcessingDatabase;
+option go_package = "Dressy/ProcessingDatabase";
 
 /*		'Records' table			*/
 service ProcessingDatabaseRecords {

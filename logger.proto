@@ -2,7 +2,8 @@
 
 import "google/protobuf/timestamp.proto";
 
-package Logger;
+package Dressy.Logger;
+option go_package = "Dressy/Logger";
 
 //Enum which cosist of services
 enum Source {

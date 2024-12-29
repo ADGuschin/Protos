@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package Dressy.Recommendation;
+option go_package = "Dressy/Recommendation";
 
 service Recommendation {
 

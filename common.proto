@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package Dressy.Common;
+option go_package = "Dressy/Common";
 
 // Embedding data type
 message Embedding {

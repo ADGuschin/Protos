@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-package Search;
+package Dressy.Search;
+option go_package = "Dressy/Search";
 
 
 message RecommendationRequest {
