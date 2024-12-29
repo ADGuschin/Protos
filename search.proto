@@ -13,7 +13,7 @@ message RecommendationResponse {
 }
 
 message UUID {
-  required string value = 1;
+   string value = 1;
 }
 
 service Search {
