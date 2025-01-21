@@ -12,11 +12,17 @@ message EmbeddingList {
 }
 
 // ID type for all identifying fields
-message Id {
+message ProductId {
 	bytes id = 1;
 }
-message IdList {
-	repeated Id id_list = 1;
+message ProductIdList {
+	repeated ProductId id_list = 1;
+}
+message UserId {
+	uint64 id = 1;
+}
+message UserIdList {
+	repeated UserId id_list = 1;
 }
 
 // Status message with results of procedure execution

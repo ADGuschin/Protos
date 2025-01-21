@@ -30,7 +30,6 @@ service ProcessingDatabaseRecords {
   //rpc DeleteRecordsById(DeleteRecordsByIdRequest) returns (DeleteRecordsByIdResponse); may be useful later
 
   //   !!!!!FOR TEST ENVIRONMENT ONLY!!!!!! Clearing table 
-  rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse);
   rpc ClearTable(ClearTableRequest) returns (ClearTableResponse);
 }
 
@@ -65,7 +64,7 @@ message GetEmbeddingsByStatusResponse {
 	Common.CommandStatus status = 2;
 }
 message GetRecordByIdRequest {
-	Common.Id record_id = 1;
+	Common.ProductId record_id = 1;
 }
 message GetRecordByIdResponse {
 	Record record = 1;
@@ -81,10 +80,6 @@ message UpdateRecordByIdResponse {
 }
 
 // Delete data
-message AuthenticationRequest {}
-message AuthenticationResponse {
-	bytes rsa_public_key = 1;
-}
 message ClearTableRequest {
 	string auth_data = 1;
 }
@@ -96,7 +91,7 @@ message ClearTableResponse {
 // Main data object. Record contains all necessary data for any procedures, may be optimized by server with including only mandatory data objects for each client
 // may be replaced with table-record structured message to optimize resources
 message Record {
-	Common.Id record_id = 1;
+	Common.ProductId record_id = 1;
 	RecordStatus status = 2;
 	string article = 3;
 	string category = 4;
@@ -107,7 +102,7 @@ message Record {
 	string norm = 9;
 	string metadata = 10; 
 	string source = 11;
-	Common.Id main_record_id = 12; // reference to main record of current thing
+	Common.ProductId main_record_id = 12; // reference to main record of current thing
 	string same_goods = 13; //json with id list of other records of current thing
 	Gender gender = 14;
 	string price = 15;
@@ -116,7 +111,7 @@ message Record {
 	reserved "NormalizedImage", "Added", "Updated", "LastErrorMessage";
 }
 message EmbeddingWithId {
-	Common.Id id = 1;
+	Common.ProductId id = 1;
 	Common.Embedding embedding = 2;
 }
 
@@ -143,13 +138,25 @@ enum Gender {
 /*		'Users' table		*/
 
 service ProcessingDatabaseUsers {
+  
+  // Add new user to database
+  rpc AddNewUserEmbeddingByKey(AddNewUserEmbeddingByKeyRequest) returns (AddNewUserEmbeddingByKeyResponse);
+
+  // Update existing user embeddings
+  rpc UpdateUserEmbeddingByKey(UpdateUserEmbeddingByKeyRequest) returns (UpdateUserEmbeddingByKeyResponse);
 
   // Returns user embedding by Key, if requested key is absent then this is a new user, so his Key will be added and the embedding will be generated
   rpc GetUserEmbeddingByKey(GetUserEmbeddingByKeyRequest) returns (GetUserEmbeddingByKeyResponse);
 
   // Checking whether the user has seen the record or not
   // ! Returns "true" ONLY if requested user_id and record_id_list is present, and requested record_id is present in record_id_list !
-  rpc IsRecordViewedByUser(IsRecordViewedByUserRequest) returns (IsRecordViewedByUserResponse);
+  //rpc IsRecordViewedByUser(IsRecordViewedByUserRequest) returns (IsRecordViewedByUserResponse);
+  
+  // Add new user viewed records list to database
+  rpc AddNewUserViewedRecords(AddNewUserViewedRecordsRequest) returns (AddNewUserViewedRecordsResponse);
+
+  // Returns the list of viewed records for specified user
+  rpc GetViewedRecordsForUser(GetViewedRecordsForUserRequest) returns (GetViewedRecordsForUserResponse);
 
   // Adds user viewed record to the table, should be executed on the stage of user reaction processing
   rpc AddViewedRecordToUser(AddViewedRecordToUserRequest) returns (AddViewedRecordToUserResponse);
@@ -159,6 +166,24 @@ service ProcessingDatabaseUsers {
 }
 
 /*			'Users' table requests & responses			*/
+
+// Adding new user embedding
+message AddNewUserEmbeddingByKeyRequest {
+	UserEmbeddingKey key = 1;
+	Common.Embedding embedding = 2;
+}
+message AddNewUserEmbeddingByKeyResponse {
+	Common.CommandStatus status = 1;
+}
+
+// Updating user embeddings
+message UpdateUserEmbeddingByKeyRequest {
+	UserEmbeddingKey key = 1;
+	Common.Embedding embedding = 2;
+}
+message UpdateUserEmbeddingByKeyResponse {
+	Common.CommandStatus status = 1;
+}
 
 // Getting embedding for searching similar records
 message GetUserEmbeddingByKeyRequest {
@@ -170,19 +195,36 @@ message GetUserEmbeddingByKeyResponse {
 }
 
 // Checking for viewed records to avoid repeatings in user experience
-message IsRecordViewedByUserRequest {
+/*message IsRecordViewedByUserRequest {
 	Common.Id user_id = 1;
 	Common.Id record_id = 2;
 }
 message IsRecordViewedByUserResponse {
 	bool is_record_viewed = 1;
 	Common.CommandStatus status = 2;
+}*/
+
+// Adding new user's viewed records list 
+message AddNewUserViewedRecordsRequest {
+	Common.UserId user_id = 1;
+}
+message AddNewUserViewedRecordsResponse {
+	Common.CommandStatus status = 1;
+}
+
+// Getting user's viewed records list 
+message GetViewedRecordsForUserRequest {
+	Common.UserId user_id = 1;
+}
+message GetViewedRecordsForUserResponse {
+	Common.ProductIdList record_id_list = 1;
+	Common.CommandStatus status = 2;
 }
 
 // Updating user viewed records list
 message AddViewedRecordToUserRequest {
-	Common.Id user_id = 1;
-	Common.Id record_id = 2;
+	Common.UserId user_id = 1;
+	Common.ProductId record_id = 2;
 }
 message AddViewedRecordToUserResponse {
 	Common.CommandStatus status = 1;
@@ -190,7 +232,7 @@ message AddViewedRecordToUserResponse {
 
 // Deleting ex-user's data
 message DeleteUserByIdRequest {
-	Common.Id user_id = 1;
+	Common.UserId user_id = 1;
 }
 message DeleteUserByIdResponse {
 	Common.CommandStatus status = 1;
@@ -202,12 +244,12 @@ message UserEmbedding {
 	Common.Embedding embedding = 2;
 }
 message UserEmbeddingKey {
-	Common.Id user_id = 1;
+	Common.UserId user_id = 1;
 	string category = 2;
 }
 
 // Viewed records data structure
 message ViewedRecords {
-	Common.Id user_id = 1;
-	Common.IdList record_id_list = 2;
+	Common.UserId user_id = 1;
+	Common.ProductIdList record_id_list = 2;
 }
